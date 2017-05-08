@@ -1,6 +1,10 @@
 <?php
-$b=$_POST['answer2'];
-print_r($_POST['answer2']);
+$answer2= "";
+foreach ($_POST['answer2'] as $key => $value) {
+  $answer2 = $answer2."　".$value;
+}
+
+
 ?>
 
 <html>
@@ -9,8 +13,8 @@ print_r($_POST['answer2']);
   </head>
   <body>
     <form action="result.php" method="POST">
-      <input type="hidden" name="answer[]" value="<?php print_r ($_POST['answer']) ?>"/>
-      <input type="hidden" name="answer2[]" value="<?php print_r ($_POST['answer2']) ?>"/>
+      <input type="hidden" name="answer" value="<?php echo $_POST['answer'] ?>" />
+      <input type="hidden" name="answer2" value="<?php echo $answer2 ?>"/>
       <input type="checkbox" name="answer3[]" value="教育"/>教育
       <input type="checkbox" name="answer3[]" value="観光"/>観光
       <input type="checkbox" name="answer3[]" value="農業"/>農業

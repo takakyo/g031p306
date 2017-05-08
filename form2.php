@@ -1,5 +1,10 @@
 <?php
-$a=$_POST['answer'];
+// var_dump($_POST);
+$answer= "";
+foreach ($_POST['answer'] as $key => $value) {
+  $answer = $answer."　".$value;
+}
+
 ?>
 
 <html>
@@ -8,7 +13,7 @@ $a=$_POST['answer'];
   </head>
   <body>
     <form action="form3.php" method="POST">
-      <input type="hidden" name="answer[]" value="<?php print_r ($_POST['answer']) ?>"/>
+      <input type="hidden" name="answer" value="<?php echo $answer ?>"/>
       <input type="checkbox" name="answer2[]" value="スポーツ"/>スポーツ
       <input type="checkbox" name="answer2[]" value="読書"/>読書
       <input type="checkbox" name="answer2[]" value="料理"/>料理
