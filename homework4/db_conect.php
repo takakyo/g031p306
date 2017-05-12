@@ -1,6 +1,6 @@
 ﻿<?php
 $db_user = 'root';     // ユーザー名
-$db_pass = 'takakyo3'; // パスワード
+$db_pass = 'v7hrche8'; // パスワード
 $db_name = 'bbs';     // データベース名
 // MySQLに接続
 $mysqli = new mysqli('localhost', $db_user, $db_pass, $db_name);
