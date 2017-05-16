@@ -32,7 +32,6 @@ $result = $mysqli->query('select * from `messages` order by `id` desc');
       <input type="submit" />
     </form>
     <table border="2">
-        <tr>
     <?php foreach ($result as $row) : ?>
       <tr>
         <?php
