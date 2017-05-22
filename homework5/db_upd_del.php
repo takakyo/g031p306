@@ -35,14 +35,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $mysqli->query("select `password` from `messages` where `id` = ('{$_POST['upd']}') ") ;
     if($_POST['passwords'] == $_POST['code']){
       $mysqli->query("update `messages` set `body` = ('{$_POST['upd_body']}') where `id` = ('{$_POST['upd']}')");
-      echo $_POST['upd_body'].$_POST['upd'];
+      echo $_POST['upd_body'];
       $result_message = 'メッセージを更新しました;)';
     }else{
       echo $_POST['code'];
       $result_message = 'パスワードが違います。';
     }
   }
-
+// 並び替え
   $result = $mysqli->query('select * from `messages` order by `id` desc');
 ?>
 
@@ -52,6 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   </head>
   <body>
     <p> <?php echo $result_message; ?> </p>
+    <!-- 内容,投稿者,パスワードの入力フォーム -->
     <form action="" method="post">
       題目　<input type="text" name="message" />　
       投稿者名　<input type="text" name="contributor" />
