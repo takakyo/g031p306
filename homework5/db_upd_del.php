@@ -15,13 +15,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $result_message = 'データベースに登録しました！XD';
   } else {
-    $result_message = 'メッセージを入力してください...XO';
+    $result_message = 'すべての項目に記入してください...XO';
   }
 }
 
 // データの削除
   if (!empty($_POST['del']) && !empty($_POST['code'])) {
-    $mysqli->query("select `password` from `messages` `where `id` = ('{$_POST['del']}') ") ;
+    $mysqli->query("select `password` from `messages` where `id` = ('{$_POST['del']}') ") ;
     if($_POST['passwords'] == $_POST['code']){
       $mysqli->query("delete from `messages` where `id` = {$_POST['del']}");
       $result_message = 'メッセージを削除しました;)';
@@ -32,14 +32,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
   // データの更新
   if (!empty($_POST['upd']) && !empty($_POST['code'])) {
-    $mysqli->query("select `password` from `messages` `where `id` = ('{$_POST['upd']}') ") ;
+    $mysqli->query("select `password` from `messages` where `id` = ('{$_POST['upd']}') ") ;
     if($_POST['passwords'] == $_POST['code']){
-      $mysqli->query("update `messages` set `body` = {$_POST['upd_body']} where `id` = {$_POST['upd']}");
-      echo $_POST['upd_body'];
+      $mysqli->query("update `messages` set `body` = ('{$_POST['upd_body']}') where `id` = ('{$_POST['upd']}')");
+      echo $_POST['upd_body'].$_POST['upd'];
       $result_message = 'メッセージを更新しました;)';
     }else{
-      $result_message = 'パスワードが違います。';
       echo $_POST['code'];
+      $result_message = 'パスワードが違います。';
     }
   }
 
@@ -70,6 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <td> <?php echo $row['timestamp'] ?> </td>
         <td> <?php echo $row['name'] ?> </td>
         <td>
+          <!-- 削除フォーム -->
         <form action="" method="post">
         　<input type="hidden" name="del" value="<?php echo $row['id']; ?>" />
         　<input type="hidden" name="passwords" value="<?php echo $row['password']; ?>" />
@@ -78,7 +79,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       　</td>
     </form>
       <td>
-      <form action="" method="post">
+        <!-- 内容更新フォーム -->
+    <form action="" method="post">
       　<input type="hidden" name="upd" value="<?php echo $row['id']; ?>" />
       　<input type="hidden" name="passwords" value="<?php echo $row['password']; ?>" />
         更新内容  <input type="text" name="upd_body"  />
@@ -86,9 +88,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       　パスワード<input type="password" name="code" />
       <input type="submit" value="更新" />
     　</td>
-        </form>
+    </form>
       </tr>
     <?php endforeach ; ?>
-        </table>
+   </table>
   </body>
 </html>
