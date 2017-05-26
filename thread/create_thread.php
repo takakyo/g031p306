@@ -8,40 +8,39 @@ $result = $mysqli->query('select * from `threads`');
 $result_message = '';
 // データの登録
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  if (!empty($_POST['thread']) && !empty($_POST['passwords'])) {
-    $message = htmlspecialchars($_POST['thread'],$_POST['passwords']);
-    $message = $mysqli->real_escape_string($_POST['thread'],$_POST['passwords']);
-    $mysqli->query("insert into `threads` (`name`,`password`)
-     values ('{$_POST['thread']}','{$_POST['passwords']}')");
+  if (!empty($_POST['thread'])  && !empty($_POST['user_ad'])) {
+    $message = htmlspecialchars($_POST['thread'],$_POST['user_ad']);
+    $message = $mysqli->real_escape_string($_POST['thread'],$_POST['user_ad']);
+    $mysqli->query("insert into `threads` (`name`,`user`)
+     values ('{$_POST['thread']}','{$_POST['user_ad']}')");
     $result_message = 'スレッドを登録しました！';
   } else {
     $result_message = '全ての項目に入力してください';
   }
 // データの削除
-  if (!empty($_POST['del']) && !empty($_POST['code'])) {
-    $mysqli->query("select `password` from `threads` where `id` = ('{$_POST['del']}') ") ;
-    if($_POST['passwords'] == $_POST['code']){
+  if (!empty($_POST['del']) && !empty($_POST['users'])) {
+    $mysqli->query("select `user` from `threads` where `id` = ('{$_POST['del']}') ") ;
+    if($_POST['users'] == $_SERVER["REMOTE_ADDR"] ){
       $mysqli->query("delete from `threads` where `id` = {$_POST['del']}");
       $result_message = 'メッセージを削除しました;)';
     }else{
-      $result_message = 'パスワードが違います。';
+      $result_message = '権限がありません';
     }
   }
   // データの更新
-  if (!empty($_POST['upd']) && !empty($_POST['code']) && !empty($_POST['upd_name'])) {
+  if (!empty($_POST['upd']) && !empty($_POST['upd_name'])) {
     $mysqli->query("select `password` from `threads` where `id` = ('{$_POST['upd']}') ") ;
-    if($_POST['passwords'] == $_POST['code']){
+    if($_POST['users'] == $_SERVER["REMOTE_ADDR"] ){
       $mysqli->query("update `threads` set `name` = ('{$_POST['upd_name']}') where `id` = ('{$_POST['upd']}')");
       $result_message = 'スレッド名を更新しました;)';
     }else{
-      $result_message = 'パスワードが違います。';
+      $result_message = '権限がありません';
     }
   }
 }
 // 並び替え
   $result = $mysqli->query('select * from `threads` order by `id` desc');
 ?>
-
 <html>
 <title>スレッド一覧</title>
   <head>
@@ -52,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <!-- 内容,パスワードの入力フォーム -->
     <form action="" method="post">
       題目　<input type="text" name="thread" />　
-      パスワード<input type="password" name="passwords">
+      <input type="hidden" name="user_ad" value="<?PHP echo $_SERVER["REMOTE_ADDR"] ; ?>">
       <input type="submit" />
     </form>
     <table border="2">
@@ -72,8 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           <!-- 削除フォーム -->
         <form action="" method="post">
         　<input type="hidden" name="del" value="<?php echo $row['id']; ?>" />
-        　<input type="hidden" name="passwords" value="<?php echo $row['password']; ?>" />
-        パスワード<input type="password" name="code" />
+        　<input type="hidden" name="users" value="<?php echo $row['user']; ?>" />
         <input type="submit" value="削除" />
       　</td>
     </form>
@@ -81,10 +79,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <!-- 内容更新フォーム -->
     <form action="" method="post">
       　<input type="hidden" name="upd" value="<?php echo $row['id']; ?>" />
-      　<input type="hidden" name="passwords" value="<?php echo $row['password']; ?>" />
+      　<input type="hidden" name="users" value="<?php echo $row['user']; ?>" />
         更新内容  <input type="text" name="upd_name"  />
         <br>
-      　パスワード<input type="password" name="code" />
       <input type="submit" value="更新" />
     　</td>
     </form>
