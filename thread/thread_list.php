@@ -19,6 +19,7 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 // データの登録
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   if (!empty($_POST['thread'])  && !empty($_POST['user_name'])) {
+    // SQLインジェクション対策
     $thread = htmlspecialchars($_POST['thread']);
     $user_name = htmlspecialchars($_POST['user_name']);
     $message = $mysqli->real_escape_string($thread,$user_name);
@@ -40,6 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   }
   // データの更新
   if (!empty($_POST['update']) && !empty($_POST['update_name'])) {
+    // SQLインジェクション対策
     $update_name = htmlspecialchars($_POST['update_name']);
     $message = $mysqli->real_escape_string($update_name);
     $mysqli->query("SELECT `password` FROM `threads` WHERE `id` = ('{$_POST['update']}') ") ;
@@ -79,6 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </td>
         <form action="./thread.php" method="post">
         <td>
+          <!-- XSS対策 -->
           <?php $name = htmlspecialchars($row['name']); ?>
           <input type="submit" name="thread_name" value="<?php echo $name; ?>" />
         </td>

@@ -2,12 +2,16 @@
 $db_user = 'root';
 $db_pass = 'v7hrche8';
 $db_name = 'bbs';
+
 // データベースの接続
 $mysqli = new mysqli('localhost', $db_user, $db_pass, $db_name);
 $result = $mysqli->query("SELECT * FROM `messages`");
+
 // スレッドID,スレッド名の取得
+// SQLインジェクション
 $thread_name = htmlspecialchars($_POST['thread_name']);
 $thread_id = htmlspecialchars($_POST['thread_id']);
+
 if(!empty($_POST['threads_id']) && !empty($_POST['threads_name'])){
   $thread_name = htmlspecialchars($_POST['threads_name']);
   $thread_name=$_POST['threads_name'];
@@ -20,9 +24,12 @@ echo "<p>Hello {$_SERVER['PHP_AUTH_USER']}</p>";
 // データの登録
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   if (!empty($_POST['message']) ) {
+
+    // SQLインジェクション対策
     $body = htmlspecialchars($_POST['message']);
     $name = htmlspecialchars($_SERVER['PHP_AUTH_USER']);
     $message = $mysqli->real_escape_string($body);
+
     $_SERVER['PHP_AUTH_USER'] = $mysqli->real_escape_string($_SERVER['PHP_AUTH_USER']);
     $mysqli->query("INSERT INTO `messages` (`body`,`name`,`thread_id`)
      VALUES ('{$body}','{$name}','{$_POST['threads_id']}')");
@@ -47,8 +54,9 @@ if(empty($_POST['threads_id'])){
   }
   // データの更新
   if (!empty($_POST['update']) && !empty($_POST['code']) && !empty($_POST['update_body'])) {
+
+// SQLインジェクション対策
     $update_body = htmlspecialchars($_POST['update_body']);
-    $_POST['code'] = $mysqli->real_escape_string($_POST['code']);
     $message = $mysqli->real_escape_string($update_body);
     $mysqli->query("SELECT * FROM `messages` WHERE `id` = ('{$_POST['update']}') ") ;
     if($_SERVER['PHP_AUTH_PW'] == $_POST['code']){
@@ -63,7 +71,12 @@ if(empty($_POST['threads_id'])){
 ?>
 
 <html>
-<title> <?PHP echo $thread_name; ?> </title>
+<title>
+  <?PHP
+  $thread_name = htmlspecialchars($thread_name);
+  echo $thread_name;
+  ?>
+</title>
   <head>
     <meta charset="UTF-8">
     <h1> <?PHP echo $thread_name; ?> </h1>
@@ -89,6 +102,7 @@ if(empty($_POST['threads_id'])){
           <?php echo $row['id']; ?>
         </td>
         <td>
+          <!-- XSS対策 -->
           <?php
           $body = htmlspecialchars($row['body']);
           echo $body;
@@ -96,6 +110,7 @@ if(empty($_POST['threads_id'])){
         </td>
         <td> <?php echo $row['timestamp'] ?> </td>
         <td>
+          <!-- XSS対策 -->
           <?php
           $name = htmlspecialchars($row['name']);
           echo $name;
