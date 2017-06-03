@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $message = $mysqli->real_escape_string($update_name);
     $mysqli->query("SELECT `password` FROM `threads` WHERE `id` = ('{$_POST['update']}') ") ;
     if($_POST['users'] == $_SERVER['PHP_AUTH_USER'] ){
-      $mysqli->query("UPDATE `threads` SET `name` = ('{$_POST['update_name']}') WHERE `id` = ('{$_POST['update']}')");
+      $mysqli->query("UPDATE `threads` SET `name` = ('{$update_name}') WHERE `id` = ('{$_POST['update']}')");
       $result_message = 'スレッド名を更新しました;)';
     }else{
       $result_message = '権限がありません';
