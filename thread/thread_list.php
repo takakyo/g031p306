@@ -8,7 +8,7 @@ $result = $mysqli->query('SELECT * FROM `threads`');
 $result_message = '';
 
 // ユーザ認証
-if (!isset($_SERVER['PHP_AUTH_USER'])) {
+if (empty($_SERVER['PHP_AUTH_USER']) && empty($_SERVER['PHP_AUTH_PW'])) {
     header('WWW-Authenticate: Basic realm="My Realm"');
     header('HTTP/1.0 401 Unauthorized');
     exit;
