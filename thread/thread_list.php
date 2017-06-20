@@ -8,13 +8,24 @@ $result = $mysqli->query('SELECT * FROM `threads`');
 $result_message = '';
 
 // ユーザ認証
-if (empty($_SERVER['PHP_AUTH_USER']) && empty($_SERVER['PHP_AUTH_PW'])) {
-    header('WWW-Authenticate: Basic realm="My Realm"');
+if (empty($_SERVER['PHP_AUTH_USER']) || empty($_SERVER['PHP_AUTH_PW']) ) {
+  // ログイン時にキャンセルを押した場合
+    echo '<a href="thread_list.php">再ログイン</a>';
+    header('WWW-Authenticate: Basic realm="Private Page"');
     header('HTTP/1.0 401 Unauthorized');
     exit;
 } else {
-    echo "<p>Hello {$_SERVER['PHP_AUTH_USER']}</p>";
+  foreach($result as $row){
+    if($row['user'] == $_SERVER['PHP_AUTH_USER'] && $row['password'] == $_SERVER['PHP_AUTH_PW']){
+      // ログイン成功
+    } else if($row['user'] == $_SERVER['PHP_AUTH_USER'] && $row['password'] !== $_SERVER['PHP_AUTH_PW']){
+      echo 'すでに同じユーザ名が使われています。<a href="thread_list.php">再ログイン</a>';
+      header('HTTP/1.0 401 Unauthorized');
+      exit;
+    }
+  }
 }
+
 
 // データの登録
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -22,9 +33,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // SQLインジェクション対策
     $thread = htmlspecialchars($_POST['thread']);
     $user_name = htmlspecialchars($_POST['user_name']);
-    $message = $mysqli->real_escape_string($thread,$user_name);
-    $mysqli->query("INSERT INTO `threads` (`name`,`user`)
-     VALUES ('{$thread}','{$user_name}')");
+    $user_password = htmlspecialchars($_POST['user_password']);
+    $message = $mysqli->real_escape_string($thread,$user_name,$user_password);
+    $mysqli->query("INSERT INTO `threads` (`name`,`user`,password)
+     VALUES ('{$thread}','{$user_name}','{$user_password}')");
     $result_message = 'スレッドを登録しました！';
   } else {
     $result_message = '全ての項目に入力してください';
@@ -59,6 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <html>
 <title>スレッド一覧</title>
   <head>
+    <p>Hello  <?php echo $_SERVER['PHP_AUTH_USER']; ?></p>
     <meta charset="UTF-8">
   </head>
   <body>
@@ -67,6 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <form action="" method="post">
       題目　<input type="text" name="thread" />　
       <input type="hidden" name="user_name" value="<?PHP echo $_SERVER['PHP_AUTH_USER'] ; ?>">
+      <input type="hidden" name="user_password" value="<?PHP echo $_SERVER['PHP_AUTH_PW'] ; ?>">
       <input type="submit" />
     </form>
     <table border="2">
